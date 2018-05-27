@@ -1,0 +1,240 @@
+<script src="<?= asset('app/library/app.js') ?>"></script>
+<style>
+    .selected{
+        cursor: pointer;
+    }
+    .selected:hover{
+        background-color: #0585C0;
+        color: white;
+    }
+    .seleccionada{
+        background-color: #0585C0;
+        color: white;
+    }
+</style>
+<div>
+
+    <div class="row" style="float: right">
+        <a href="#"  ng-show="printMode" ng-click="printInfo()"><img style="width: 40px;height: 45px;" src="<?= asset('app/img/3.png') ?>"></a>
+        <a href="#"><img style="width: 40px;height: 45px;" src="<?= asset('app/img/4.png') ?>"></a>
+        <a href="#"><img style="width: 47px;height: 45px;" src="<?= asset('app/img/16.png') ?>"></a>
+    </div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#ingreso" aria-controls="ingreso" role="tab" data-toggle="tab">Ingreso</a></li>
+        <li role="presentation"><a href="#retencion" aria-controls="retencion" role="tab" data-toggle="tab">Retencion</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="ingreso">
+            <form name="form1" novalidate class="form-horizontal" role="form" ng-submit="add()" enctype="multipart/form-data">
+                <!-- <input type="hidden" name="_token" value="{!! csrf_token() !!}"> -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="datetimepicker1" class="col-sm-2 control-label">Fecha Ingreso</label>
+                            <div class="col-sm-2">
+                                <div class="input-group date" id="datetimepicker1">
+                                <input type="text" class="form-control"/>
+                                     <span class="input-group-addon">
+                                         <span class="glyphicon glyphicon-calendar"></span>
+                                     </span>
+                                </div>
+                            </div>
+                            <span class="col-sm-1"></span>
+                            <label class="col-sm-2 control-label">Registro venta No.: </label>
+                        </div>
+                    </div>
+
+                    <h4>Datos Cliente</h4>
+
+                    <hr>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="rucci" class="col-sm-2 control-label">RUC/CI</label>
+                            <div class="col-sm-2">
+                                <input type="text" class="form-control" id="rucci">
+                            </div>
+                            <label class="col-sm-2 control-label">Razon Social: {{razonsocial}}</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Teléfono: </label>
+                            <span class="col-sm-3">
+                            </span>
+                            <label class="col-sm-2 control-label">Direccion: {{direccion}}</label>
+                        </div>
+                    </div>
+
+                    <h4>Datos Documento</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="numero" class="col-md-2 control-label">No. Documento</label>
+                            <div class="col-md-1">
+                                <input type="text" class="form-control" id="inventario">
+                            </div>
+                            <div class="col-md-1">
+                                <input type="text" class="form-control" id="facturero">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" class="form-control" id="numero">
+                            </div>
+                            <label for="autorizacion" class="col-sm-2 control-label">Autorizacion</label>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="autorizacion">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="formapago" class="col-sm-2 control-label">Forma de Pago</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" id="formapago" name="idcargo" ng-model="cargo.idcargo">
+                                    <option ng-repeat="cargo in Employee.cargos" value="{{cargo.idcargo}}">{{cargo.nombrecargo}}</option>
+                                </select>
+                            </div>
+
+                            <label for="vendedor" class="col-sm-2 control-label">Vendedor</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" id="vendedor">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <h4>Detalle Venta</h4>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="table-responsive">
+                            <button id="btn_add" class="btn btn-primary">&#43;</button>
+                            <button id="bt_del" style="float: right;" class="btn btn-primary">&#45;</button>
+                            <table id="tabla" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th style="text-align:center">Bodega</th>
+                                    <th style="text-align:center">Cod. Prod</th>
+                                    <th style="text-align:center">Cant.</th>
+                                    <th style="text-align:center">Detalle</th>
+                                    <th style="text-align:center">PVP Unitario</th>
+                                    <th style="text-align:center">IVA</th>
+                                    <th style="text-align:center">Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="Bodega" id="bodega"></td>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="Codigo Producto" id="codproducto"></td>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="Cantidad" id="cantidad"></td>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="Detalle" id="detalle"></td>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="PVP Unitario" id="pvpunitario"></td>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="IVA" id="ivaa"></td>
+                                    <td class="seleccionada1" style="text-align:center"><input type="text" class="form-control" placeholder="Total" id="totala"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center"></td>
+                                    <td style="text-align:center"></td>
+                                    <td style="text-align:center"></td>
+                                    <td style="text-align:center"></td>
+                                    <td style="text-align:center"></td>
+                                    <td style="text-align:center"></td>
+                                    <td style="text-align:center"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <br><br><br>
+                    <!-- Firma Box-->
+                    <div class="col-lg-6">
+                        <div style="border-style:double;border-width: 1px;">
+                            <br><br><br><br><br><br>
+                        </div>
+                            <br><br><br><br><br><br>
+                        <button class="btn btn-primary" style="height: 50px; width: 85px;">Guardar</button>
+                        <button class="btn btn-primary" style="height: 50px; width: 85px;">Anular</button>
+                        <button class="btn btn-primary" style="height: 50px; width: 85px;">Retencion </button>
+                        <button class="btn btn-primary" style="height: 50px; width: 85px;">Pagar</button>
+                    </div>
+
+                    <!-- Sale Box-->
+                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                        <table class="table">
+                            <tr style="border-style: hidden">
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="porcientodescuento">
+                                </td>
+                                <td class="col-sm-2">
+                                    <label for="porcientodescuento" class="control-label">% Descuento: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <label for="subtotal14" class="control-label">Subtotal 14%: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="subtotal14">
+                                </td>
+                            </tr>
+                            <tr style="border-style: hidden">
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2">
+                                    <label for="subtotal0" class="control-label">Subtotal 0%: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="subtotal0">
+                                </td>
+                            </tr>
+                            <tr style="border-style: hidden">
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2">
+                                    <label for="descuentos" class="control-label">Descuentos: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="descuentos">
+                                </td>
+                            </tr>
+                            <tr style="border-style: hidden">
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2">
+                                    <label for="otros" class="control-label">Otros: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="otros">
+                                </td>
+                            </tr>
+                            <tr style="border-style: hidden">
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2">
+                                    <label for="iva" class="control-label">IVA: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="iva">
+                                </td>
+                            </tr>
+                            <tr style="border-style: hidden">
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2"></td>
+                                <td class="col-sm-2">
+                                    <label for="total" class="control-label">Total: </label>
+                                </td>
+                                <td class="col-sm-2">
+                                    <input type="text" class="form-control" id="total">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="retencion">...</div>
+    </div>
+
+</div>

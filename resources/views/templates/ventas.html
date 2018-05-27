@@ -1,0 +1,61 @@
+
+<div ng-init="showall1()">
+    <h3>Ventas</h3>
+
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm ng-valid ng-dirty" placeholder="Search" ng-model="searchText" name="table_search" title="" tooltip="" data-original-title="Min character length is 3">
+                <span class="input-group-addon">Go!</span>                
+            </div>
+        </div>
+        <span class=""></span>
+        <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="form-group">
+                <select class="form-control" id="idcargo" name="idcargo" ng-model="cargo.idcargo">
+                    <option ng-repeat="cargo in Employee.cargos" value="{{cargo.idcargo}}">{{cargo.nombrecargo}}</option>
+                </select>
+                <div ng-show="form1.$submitted || form1.idcargo.$touched">
+                    <div class="error" ng-show="form1.idcargo.$error.required">Cargo no pueden estar en blanco.</div>
+                </div>
+            </div>
+        </div>
+        <span class=""></span>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <div class="pull-right" style="">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#create-user" onclick="angular.element(this).scope().create(event)">+</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-stripped" style="margin-top:10px;">
+        <thead>
+        <tr>
+            <th style="text-align:center">Numero Documento</th>
+            <th style="text-align:center">Fecha Ingreso</th>
+            <th style="text-align:center">Razon Social</th>
+            <th style="text-align:center">SubTotal</th>
+            <th style="text-align:center">IVA</th>
+            <th style="text-align:center">Total</th>
+            <th style="text-align:center">Estado</th>
+            <th style="text-align:center">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr ng-repeat="employee in employees11 | filter:searchText">
+            <td style="text-align:center">{{ employee.documentoident }}</td>
+            <td style="text-align:center">{{ employee.nombrepersona }}</td>
+            <td style="text-align:center">{{ employee.idcargo }}</td>
+            <td style="text-align:center">{{ employee.telefonoprincipalpersona }}</td>
+            <td style="text-align:center">{{ employee.celularpersona }}</td>
+            <td style="text-align:center">
+                <button data-toggle="modal" ng-click="edit(employee.documentoident)" data-target="#edit-data" class="btn btn-primary">Ver</button>
+                <button ng-click="remove(employee.documentoident, $index)" class="btn btn-danger">Anular</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="templates/dirPagination.html" ></dir-pagination-controls> -->
+

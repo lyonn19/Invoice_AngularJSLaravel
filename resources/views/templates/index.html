@@ -1,0 +1,385 @@
+
+<div ng-init="showall()">
+    <h3>Administrar Empleados</h3>
+
+    <div class="row">
+        <div class="col-lg-8 margin-tb">
+            <div>
+                <div class="input-group">
+                    <input type="text" class="form-control input-sm ng-valid ng-dirty" placeholder="Buscar" ng-model="searchText" name="table_search" title="" tooltip="" data-original-title="Min character length is 3">
+                    <span class="input-group-addon">Search</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+       <div class="col-lg-12 margin-tb">
+            <div class="pull-right" style="padding-top:30px">
+                <button class="btn btn-success" data-toggle="modal" data-target="#create-user" onclick="angular.element(this).scope().create(event)">Agregar Empleado</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-stripped" style="margin-top:10px;">
+        <thead>
+            <tr>
+                <th style="text-align:center">Doc ID</th>
+                <th style="text-align:center">Nombres</th>
+                <th style="text-align:center">Cargo</th>
+                <th style="text-align:center">Telefono</th>
+                <th style="text-align:center">Celular</th>
+                <th style="text-align:center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="employee in employees | filter:searchText">
+                <td style="text-align:center">{{ employee.documentoident }}</td>
+                <td style="text-align:center">{{ employee.nombrepersona }}</td>
+                <td style="text-align:center">{{ employee.idcargo }}</td>
+                <td style="text-align:center">{{ employee.telefonoprincipalpersona }}</td>
+                <td style="text-align:center">{{ employee.celularpersona }}</td>
+                <td style="text-align:center">
+                <button data-toggle="modal" ng-click="edit(employee.documentoident)" data-target="#edit-data" class="btn btn-primary">Editar</button>
+                <button ng-click="remove(employee.documentoident, $index)" class="btn btn-danger">Eliminar</button>
+                <button data-toggle="modal" ng-click="view(employee.documentoident)" data-target="#view-data" class="btn btn-success">Ver</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<!-- <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)" template-url="templates/dirPagination.html" ></dir-pagination-controls> -->
+
+<!-- Create Modal -->
+    <div class="modal" id="create-user" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" ng-init="edit()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form name="form1" novalidate class="login-form" role="form" ng-submit="add()" enctype="multipart/form-data">
+                <!-- <input type="hidden" name="_token" value="{!! csrf_token() !!}"> -->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Ingresar Nuevo Empleado</h4>
+                </div>
+                <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group date" id="datetimepicker1">
+                                        <input type="text" class="form-control" ng-model="Employee.fechaingreso"/>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Documento Identidad: </strong>
+                                <div class="form-group">
+                                    <input ng-model="Employee.documentoident" type="text" ng-pattern="docIdent" name="documentoident" class="form-control" required ng-minlength="minlength">
+                                    <div ng-show="form1.$submitted || form1.documentoident.$touched || form1.documentoident.$valid">
+                                        <div class="error" ng-show="form1.documentoident.$error.required">Doc. Id no pueden estar en blanco.</div>
+                                        <div class="error" ng-show="form1.documentoident.$error.pattern">Debe poner un doc iden valido.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Cargo: </strong>
+                                <div class="form-group">
+                                    <select class="form-control" id="idcargo" name="idcargo" ng-model="cargo.idcargo">
+                                        <option ng-repeat="cargo in Employee.cargos" value="{{cargo.idcargo}}">{{cargo.nombrecargo}}</option>
+                                    </select>
+                                    <div ng-show="form1.$submitted || form1.idcargo.$touched">
+                                        <div class="error" ng-show="form1.idcargo.$error.required">Cargo no pueden estar en blanco.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Apellidos : </strong>
+                                <div class="form-group" >
+                                    <input type="text" ng-pattern="patternApha" name="apellidopersona" ng-model="Employee.apellidopersona" class="form-control" required />
+                                    <div ng-show="form1.$submitted || form1.apellidopersona.$touched">
+                                        <div class="error" ng-show="form1.apellidopersona.$error.required">Apellidos no pueden estar en blanco.</div>
+                                        <div class="error" ng-show="form1.apellidopersona.$error.pattern">Debe poner un apellido valido.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Nombres : </strong>
+                                <div class="form-group" >
+                                    <input type="text" ng-pattern="patternApha" name="nombrepersona" ng-model="Employee.nombrepersona" class="form-control" required />
+                                    <div ng-show="form1.$submitted || form1.nombrepersona.$touched">
+                                        <div class="error" ng-show="form1.nombrepersona.$error.required">Nombres no pueden estar en blanco.</div>
+                                        <div class="error" ng-show="form1.nombrepersona.$error.pattern">Debe poner un nombre valido.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Telefono Principal : </strong>
+                                <div class="form-group">
+                                    <input type="text" ng-pattern="phone" name="telefonoprincipalpersona" ng-model="Employee.telefonoprincipalpersona" class="form-control" required />
+                                    <div ng-show="form1.$submitted || form1.telefonoprincipalpersona.$touched">
+                                        <div class="error" ng-show="form1.telefonoprincipalpersona.$error.required">Telefono no puede estar en blanco.</div>
+                                        <div class="error" ng-show="form1.telefonoprincipalpersona.$error.pattern">Telefono invalido</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Telefono Secundario : </strong>
+                                <div class="form-group">
+                                    <input type="text" ng-pattern="phone" name="telefonosecundariopersona"  ng-model="Employee.telefonosecundariopersona" class="form-control" required />
+                                    <div ng-show="form1.$submitted || form1.telefonosecundariopersona.$touched">
+                                        <div class="error" ng-show="form1.telefonosecundariopersona.$error.required">Telefono no puede estar en blanco.</div>
+                                        <div class="error" ng-show="form1.telefonoprincipalpersona.$error.pattern">Telefono invalido</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Celular : </strong>
+                                <div class="form-group">
+                                    <input type="text" ng-pattern="phone" name="celularpersona" ng-model="Employee.celularpersona" class="form-control" required />
+                                    <div ng-show="form1.$submitted || form1.celularpersona.$touched">
+                                        <div class="error" ng-show="form1.celularpersona.$error.required">Celular no puede estar en blanco.</div>
+                                        <div class="error" ng-show="form1.celularpersona.$error.pattern">Telefono invalido</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Direccion : </strong>
+                                <div class="form-group">
+                                    <input type="text" ng-pattern="address" name="direccionpersona" ng-model="Employee.direccionpersona" class="form-control" required />
+                                    <div ng-show="form1.$submitted || form1.direccionpersona.$touched">
+                                        <div class="error" ng-show="form1.direccionpersona.$error.required">Direccion no puede estar en blanco.</div>
+                                        <div class="error" ng-show="form1.direccionpersona.$error.pattern">Direccion invalida</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                            <strong>Correo : </strong>
+                            <div class="form-group">
+                                <input type="email" name="correopersona"  ng-model="Employee.correopersona" class="form-control" required />
+                                <div ng-show="form1.$submitted || form1.correopersona.$touched ">
+                                    <div class="error" ng-show="form1.correopersona.$error.required">Correo no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form1.correopersona.$error.email">Email invalido</div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <strong>Foto : </strong>
+                                <div class="form-group" >
+                                    <input type="file" name="photo" file-model="files" id="upload" onchange="angular.element(this).scope().imageUpload(event)" />
+
+                                </div>
+                                <div class="form-group" >
+                                    <img class="img-thumbnail" style="width:100px;height:80px;" ng-src="{{step}}" />
+                                </div>
+                            </div>
+
+                            <div class="pull-right" style="padding-right:15px;">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                <button ng-disabled="form1.$invalid" type="submit" class="btn btn-primary">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal" id="edit-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" ng-init="edit()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form name="form" novalidate class="login-form" role="form" ng-submit="update()" enctype="multipart/form-data">
+                <!--<input ng-model="EmployeeEdit.id" type="hidden" placeholder="Name" name="name" class="form-control" />-->
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Editar Empleado</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <div class="input-group date" id="datetimepicker1">
+                                    <input type="text" class="form-control" ng-model="EmployeeEdit.fechaingreso"/>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Documento Identidad : </strong>
+                                <input ng-model="EmployeeEdit.documentoident" type="text" ng-pattern="docIdent" name="documentoident" class="form-control" required ng-minlength="minlength">
+                                <div ng-show="form1.$submitted || form1.documentoident.$touched || form1.documentoident.$valid">
+                                    <div class="error" ng-show="form.documentoident.$error.required">Doc. Id no pueden estar en blanco.</div>
+                                    <div class="error" ng-show="form.documentoident.$error.pattern">Debe poner un doc iden valido solo numeros.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <strong>Cargo: </strong>
+                            <div class="form-group">
+                                <select class="form-control" id="idcargo" name="idcargo" ng-model="cargo.idcargo">
+                                    <option ng-repeat="cargo in EmployeeEdit.cargos" value="{{cargo.idcargo}}">{{cargo.nombrecargo}}</option>
+                                </select>
+                                <div ng-show="form1.$submitted || form1.idcargo.$touched">
+                                    <div class="error" ng-show="form1.idcargo.$error.required">Cargo no pueden estar en blanco.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Apellidos : </strong>
+                                <input  type="text" ng-model="EmployeeEdit.apellidopersona" ng-pattern="patternApha" name="apellidopersona" class="form-control" required />
+                                <div ng-show="form.$submitted || form.apellidopersona.$touched">
+                                    <div class="error" ng-show="form.apellidopersona.$error.required">Apellidos no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form.apellidopersona.$error.pattern">Debe poner un apellido valido.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Nombres : </strong>
+                                <input  type="text" ng-model="EmployeeEdit.nombrepersona" ng-pattern="patternApha" name="nombrepersona" class="form-control" required />
+                                <div ng-show="form.$submitted || form.nombrepersona.$touched">
+                                    <div class="error" ng-show="form.nombrepersona.$error.required">Nombre no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form.nombrepersona.$error.pattern">Debe poner un nombre valido.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Telefono Principal : </strong>
+                                <input type="text" ng-model="EmployeeEdit.telefonoprincipalpersona" ng-pattern="phone" name="telefonoprincipalpersona" class="form-control" required />
+                                <div ng-show="form.$submitted || form.telefonoprincipalpersona.$touched">
+                                    <div class="error" ng-show="form.telefonoprincipalpersona.$error.required">Telefono no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form.telefonoprincipalpersona.$error.pattern">Telefono invalido</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Telefono Secundario : </strong>
+                                <input type="text" ng-model="EmployeeEdit.telefonosecundariopersona" ng-pattern="phone" name="age" class="form-control" required />
+                                <div ng-show="form.$submitted || form.telefonosecundariopersona.$touched">
+                                    <div class="error" ng-show="form.telefonosecundariopersona.$error.required">Telefono no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form.telefonosecundariopersona.$error.pattern">Telefono invalido.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Celular : </strong>
+                                <input type="text" ng-model="EmployeeEdit.celularpersona" ng-pattern="phone" name="celularpersona" class="form-control" required />
+                                <div ng-show="form.$submitted || form.celularpersona.$touched">
+                                    <div class="error" ng-show="form.celularpersona.$error.required">Celular no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form.celularpersona.$error.pattern">Telefono invalido.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Direccion : </strong>
+                                <input type="text" ng-model="EmployeeEdit.direccionpersona" ng-pattern="address" name="direccionpersona" class="form-control" required />
+                                <div ng-show="form.$submitted || form.direccionpersona.$touched">
+                                    <div class="error" ng-show="form.direccionpersona.$error.required">Direccion no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form.direccionpersona.$error.pattern">Debe poner un direccion valida.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Correo : </strong>
+                                <input type="email" ng-model="EmployeeEdit.correopersona"  name="correopersona" class="form-control" required />
+                                <div ng-show="form.$submitted || form.correopersona.$touched">
+                                    <div class="error" ng-show="form.correopersona.$error.required">Correo no puede estar en blanco.</div>
+                                    <div class="error" ng-show="form1.correopersona.$error.email">Email invalido</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <strong>Foto : </strong>
+                                <input type="file" name="photo" file-model="EmployeeEdit.myFile" onchange="angular.element(this).scope().uploadImg()" />
+                            </div>
+                            <div class="form-group">
+                                <img class="img-thumbnail" style="width:100px;height:80px;" ng-src="../{{EmployeeEdit.fotoempleado}}" />
+                            </div>
+                        </div>
+                        <div class="pull-left" style="padding-right:15px;">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="view-data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Informacion del Empleado</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="text-align: center">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <div class="form-group">
+                            <img class="img-thumbnail" style="width:180px;height:150px;" ng-src="../{{EmployeeView.fotoempleado}}" />
+                        </div>
+                        <div class="form-group">
+                            <label>{{EmployeeView.nombrepersona}}</label>
+                        </div>
+                        <div class="form-group">
+                            <label>{{EmployeeView.apellidopersona}}</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Empleado desde: {{EmployeeView.fechaingreso}}</label>
+                        </div>
+                         <div class="form-group">
+                            <label>Telefono: {{EmployeeView.telefonoprincipalpersona}}</label>
+                         </div>
+                        <div class="form-group">
+                            <label>Celular: {{EmployeeView.celularpersona}}</label>
+                        </div>
+                        <div class="form-group">
+                            <label>Direccion: {{EmployeeView.direccionpersona}}</label>
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail: {{EmployeeView.correopersona}}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
